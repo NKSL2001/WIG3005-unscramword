@@ -1,0 +1,207 @@
+<GameScreen>:
+    score_label: score_label
+    timer_countdown_label: timer_countdown
+    mixed_letters_label: mixed_letters
+    word_definition_label: word_definition
+    word_input: word_input
+    history_list: pastlist
+
+    BoxLayout:
+        orientation: 'vertical'
+
+        Label:
+            id: score_label
+            bold: True
+            text: 'Current score: ' + str(root.score)
+            # make label shrink to text size
+            size: self.texture_size
+            text_size: root.width, None
+            size_hint: 1, None
+            padding_y: '20dp'
+            halign: 'center'
+            valign: 'middle'
+
+        Label:
+            id: timer_countdown
+            text: 'Ready?'
+            # make label shrink to text size
+            size: self.texture_size
+            text_size: root.width, None
+            size_hint: 1, None
+            padding: '10dp'
+            halign: 'center'
+            valign: 'middle'
+
+
+        Label:
+            id: mixed_letters
+            text: '5'
+            font_size: '25sp'
+            bold: True
+            # make label shrink to text size
+            size: self.texture_size
+            text_size: root.width, None
+            size_hint: 1, None
+            padding: '10dp'
+            halign: 'center'
+            valign: 'middle'
+
+        Label:
+            id: word_definition
+            text: '[i]Definition will be here[/i]\nUse ҂ to skip the word'
+            # growable
+            size: self.texture_size[0], max(self.texture_size[1], 300) # 120) for windows
+            text_size: root.width, None
+            size_hint: 1, None
+            minimum_height: '50dp'
+            halign: 'center'
+            valign: 'middle'
+            
+            padding: '10dp'
+            # allow markup styling
+            markup: True
+        
+        BoxLayout:
+            orientation: 'horizontal'
+            padding: 10, 5
+            size_hint_max_y: '50dp'
+
+            TextInput:
+                id: word_input
+                size_hint: 1, 1
+                # automatic focus
+                focus: True
+                # left, right
+                padding_x:
+                    [self.center[0] - self._get_text_width(max(self._lines, key=len), self.tab_width, self._label_cached) / 2.0,
+                    0] if self.text else [self.center[0], 0]
+                # top, bottom
+                padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0]
+                # prevent type in tab n enter
+                write_tab: False
+                multiline: False
+                # do not unfocus after validate (press enter)
+                text_validate_unfocus: False
+                # press enter to validate function
+                on_text_validate: root.check_word(self)
+
+            Button:
+                text: '҂'
+                size_hint: .1, 1
+                on_press: root.check_word(word_input, show_answer=True)
+        
+        ScrollView:
+            RV:
+                id: pastlist
+                
+<RV>:
+    viewclass: 'Label'
+    RecycleBoxLayout:
+        default_size: None, dp(56)
+        default_size_hint: 1, None
+        size_hint_y: None
+        height: self.minimum_height
+        orientation: 'vertical'
+
+<ScoreScreen>:
+    score_label: score_label
+
+    BoxLayout:
+        orientation: 'vertical'
+
+        Label:
+            id: score_label
+            bold: True
+            text: 'Your score: ' + str(root.score)
+            font_size: '50sp'
+            # make label shrink to text size
+            size: self.texture_size
+            text_size: root.width, None
+            size_hint: 1, None
+            padding_y: '20dp'
+            halign: 'center'
+            valign: 'middle'
+
+        Button:
+            text: 'Back to main menu'
+            on_press: app.back_to_main()
+        Button:
+            text: 'Play again'
+            on_press: app.start_game(difficulty=root.difficulty, leveltype=root.leveltype, gametime=root.gametime)
+
+<MainScreen>:
+    ScrollView:
+        BoxLayout:
+            orientation: 'vertical'
+            gap: 10
+            
+            Button:
+                text: 'Easy - syllable'
+                on_press: app.start_game(difficulty='easy', leveltype='syllable', gametime=120)
+            Button:
+                text: 'Medium - syllable'
+                on_press: app.start_game(difficulty='medium', leveltype='syllable', gametime=120)
+            Button:
+                text: 'Hard - syllable'
+                on_press: app.start_game(difficulty='hard', leveltype='syllable', gametime=90)
+            Button:
+                text: 'Easy - letter'
+                on_press: app.start_game(difficulty='easy', leveltype='letter', gametime=120)
+            Button:
+                text: 'Medium - letter'
+                on_press: app.start_game(difficulty='medium', leveltype='letter', gametime=120)
+            Button:
+                text: 'Hard - letter'
+                on_press: app.start_game(difficulty='hard', leveltype='letter', gametime=90)
+            
+            Label:
+                text: "Made by Koo Song Le (S2116593)"
+                bold: True
+                # make label shrink to text size
+                size: self.texture_size
+                text_size: root.width, None
+                size_hint: 1, None
+                padding: '10dp'
+                halign: 'center'
+                valign: 'middle'
+
+BoxLayout:
+    orientation: 'vertical'
+
+    Label:
+        id: level_label
+        font_size: '25sp'
+        size: self.texture_size
+        text_size: root.width, None
+        size_hint: 1, None
+        padding: '10dp'
+        text: 'Unscramword'
+        color: 'black'
+        halign: 'center'
+        valign: 'middle'
+        bold: True
+        canvas.before:
+            Color:
+                rgb: .216, .792, .925
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+    ScreenManager:
+        id: screen_manager
+        name: 'screen_manager'
+
+        MainScreen:
+            id: main_screen
+            name: 'main_screen'
+                
+
+
+# sample code to copy for showing box size
+<ColourBoundingBox@BaseLayout>
+    canvas.before:
+        Color:
+            rgba: 1., 0., 0., .3
+        Rectangle:
+            pos: self.pos
+            size: self.size
